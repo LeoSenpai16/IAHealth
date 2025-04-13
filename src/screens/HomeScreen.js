@@ -5,14 +5,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 export default function HomeScreen() {
   return (
     <SafeAreaView style={styles.safeArea}>
-      {/* Encabezado */}
-      <View style={styles.header}>
-        <Text style={styles.title}>IAhealth</Text>
-        <View style={styles.profileContainer}>
-          <Text style={styles.profileText}>Profile</Text>
-          <Image source={require('../../assets/user-avatar.png')} style={styles.profileIcon} />
-        </View>
-      </View>
 
       {/* Chat */}
       <ScrollView contentContainerStyle={styles.chatContainer}>
