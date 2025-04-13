@@ -1,8 +1,10 @@
 import React from 'react';
 import { View, Text, StyleSheet, TextInput, Image, ScrollView, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useNavigation } from "@react-navigation/native"; 
 
 export default function HomeScreen() {
+  const navigation = useNavigation();
   return (
     <SafeAreaView style={styles.safeArea}>
 
@@ -58,9 +60,9 @@ export default function HomeScreen() {
           <View style={styles.messageBubbleBot}>
             <Text style={styles.messageText}>You can:</Text>
             <View style={styles.buttonRow}>
-              <TouchableOpacity style={styles.doctorButton}>
-                <Text style={styles.buttonText}>Doctor</Text>
-              </TouchableOpacity>
+            <TouchableOpacity style={styles.doctorButton} onPress={() => navigation.navigate('SelectType')}>
+              <Text style={styles.buttonText}>Doctor</Text>
+            </TouchableOpacity>
               <TouchableOpacity style={styles.pharmacyButton}>
                 <Text style={styles.buttonText}>Pharmacy</Text>
               </TouchableOpacity>
