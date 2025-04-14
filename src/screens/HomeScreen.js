@@ -63,7 +63,7 @@ export default function HomeScreen() {
             <TouchableOpacity style={styles.doctorButton} onPress={() => navigation.navigate('SelectType')}>
               <Text style={styles.buttonText}>Doctor</Text>
             </TouchableOpacity>
-              <TouchableOpacity style={styles.pharmacyButton}>
+              <TouchableOpacity style={styles.pharmacyButton} onPress={() => navigation.navigate('Pharmacy')}>
                 <Text style={styles.buttonText}>Pharmacy</Text>
               </TouchableOpacity>
             </View>

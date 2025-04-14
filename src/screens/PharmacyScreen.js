@@ -8,46 +8,42 @@ import {
   TouchableOpacity,
 } from 'react-native';
 
-const doctors = [
+const medicines = [
   {
     id: 1,
-    name: 'Alfredo Lopez Sandoval',
-    phone: '4491633605',
-    email: 'alf.ls@gmail.com',
-    price: '$400',
-    image: require('../../assets/doctor1.jpg'),
+    name: 'Paracetamol',
+    description: 'Pain reliever and fever reducer',
+    price: '$50',
+    image: require('../../assets/paracetamol.png'),
   },
   {
     id: 2,
-    name: 'Alfredo Lopez Sandoval',
-    phone: '4491633605',
-    email: 'alf.ls@gmail.com',
-    price: '$400',
-    image: require('../../assets/doctor2.jpg'),
+    name: 'Ibuprofenoo',
+    description: 'Anti-inflammatory for pain relief',
+    price: '$65',
+    image: require('../../assets/ibuprofeno.png'),
   },
   {
     id: 3,
-    name: 'Estefania Rodriguez Ponce',
-    phone: '4491237687',
-    email: 'estef.rp@gmail.com',
-    price: '$460',
-    image: require('../../assets/doctor3.jpg'),
+    name: 'Loratadina',
+    description: 'Allergy relief',
+    price: '$80',
+    image: require('../../assets/loratadina.png'),
   },
 ];
 
-const GeneralDoctorScreen = () => {
+const PharmacyScreen = () => {
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        {doctors.map((doctor) => (
-          <View key={doctor.id} style={styles.card}>
+        {medicines.map((med) => (
+          <View key={med.id} style={styles.card}>
             <View style={{ flex: 1 }}>
-              <Text style={styles.name}>{doctor.name}</Text>
-              <Text style={styles.details}>Phone: {doctor.phone}</Text>
-              <Text style={styles.details}>Email: {doctor.email}</Text>
-              <Text style={styles.price}>{doctor.price}</Text>
+              <Text style={styles.name}>{med.name}</Text>
+              <Text style={styles.details}>{med.description}</Text>
+              <Text style={styles.price}>{med.price}</Text>
             </View>
-            <Image source={doctor.image} style={styles.image} />
+            <Image source={med.image} style={styles.image} />
           </View>
         ))}
       </ScrollView>
@@ -59,7 +55,7 @@ const GeneralDoctorScreen = () => {
   );
 };
 
-export default GeneralDoctorScreen;
+export default PharmacyScreen;
 
 const styles = StyleSheet.create({
   container: {
