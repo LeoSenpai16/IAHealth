@@ -7,6 +7,7 @@ import {
   Image,
   TouchableOpacity,
 } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
 const specialists = [
   {
@@ -36,11 +37,17 @@ const specialists = [
 ];
 
 const SpecialistDoctorScreen = () => {
+  const navigation = useNavigation();
+
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {specialists.map((doctor) => (
-          <View key={doctor.id} style={styles.card}>
+          <TouchableOpacity
+            key={doctor.id}
+            style={styles.card}
+            onPress={() => navigation.navigate('ConfirmVisit')}
+          >
             <View style={{ flex: 1 }}>
               <Text style={styles.name}>{doctor.name}</Text>
               <Text style={styles.details}>Phone: {doctor.phone}</Text>
@@ -48,7 +55,7 @@ const SpecialistDoctorScreen = () => {
               <Text style={styles.price}>{doctor.price}</Text>
             </View>
             <Image source={doctor.image} style={styles.image} />
-          </View>
+          </TouchableOpacity>
         ))}
       </ScrollView>
 

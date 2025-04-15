@@ -7,6 +7,7 @@ import {
   Image,
   TouchableOpacity,
 } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
 const medicines = [
   {
@@ -18,7 +19,7 @@ const medicines = [
   },
   {
     id: 2,
-    name: 'Ibuprofenoo',
+    name: 'Ibuprofeno',
     description: 'Anti-inflammatory for pain relief',
     price: '$65',
     image: require('../../assets/ibuprofeno.png'),
@@ -33,18 +34,24 @@ const medicines = [
 ];
 
 const PharmacyScreen = () => {
+  const navigation = useNavigation();
+
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {medicines.map((med) => (
-          <View key={med.id} style={styles.card}>
+          <TouchableOpacity
+            key={med.id}
+            style={styles.card}
+            onPress={() => navigation.navigate('ProductDetail', { product: med })}
+          >
             <View style={{ flex: 1 }}>
               <Text style={styles.name}>{med.name}</Text>
               <Text style={styles.details}>{med.description}</Text>
               <Text style={styles.price}>{med.price}</Text>
             </View>
             <Image source={med.image} style={styles.image} />
-          </View>
+          </TouchableOpacity>
         ))}
       </ScrollView>
 
