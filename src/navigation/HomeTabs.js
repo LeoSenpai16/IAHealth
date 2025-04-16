@@ -1,26 +1,29 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
-import HomeStack from './HomeStack';
-import OrderScreen from '../screens/OrderScreen';
-import DateBookScreen from '../screens/DateBookScreen';
 import { TouchableOpacity, Image, Text, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
+import HomeStack from './HomeStack'; // Asegúrate de que HomeStack está importado
+import OrderScreen from '../screens/OrderScreen';
+import DateBookScreen from '../screens/DateBookScreen';
+
 const Tab = createBottomTabNavigator();
 
-// Botón de perfil dentro del mismo archivo
-const ProfileButton = () => {
-  const navigation = useNavigation();
-  return (
-    <TouchableOpacity onPress={() => navigation.navigate('Profile')} style={styles.profileButton}>
-      <Image source={require('../../assets/avatar-placeholder.png')} style={styles.avatar} />
-      <Text style={styles.profileText}>Profile</Text>
-    </TouchableOpacity>
-  );
-};
-
 export default function HomeTabs() {
+  const ProfileButton = () => {
+    const navigation = useNavigation();
+    return (
+      <TouchableOpacity 
+        onPress={() => navigation.navigate('Profile')} // Navega a la pantalla Profile
+        style={styles.profileButton}
+      >
+        <Image source={require('../../assets/avatar-placeholder.png')} style={styles.avatar} />
+        <Text style={styles.profileText}>Profile</Text>
+      </TouchableOpacity>
+    );
+  };
+
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -44,7 +47,7 @@ export default function HomeTabs() {
     >
       <Tab.Screen
         name="IAHealth"
-        component={HomeStack}
+        component={HomeStack} // HomeStack está correctamente registrado aquí
         options={{ headerShown: false }}
       />
       <Tab.Screen

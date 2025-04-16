@@ -16,6 +16,7 @@ import ConfirmVisit from '../screens/ConfirmVisit';
 const Stack = createNativeStackNavigator();
 
 export default function HomeStack() {
+  
   const ProfileButton = () => {
     const navigation = useNavigation();
     return (
