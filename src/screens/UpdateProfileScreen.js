@@ -36,8 +36,7 @@ export default function UpdateProfileScreen({ navigation }) {
       </TouchableOpacity>
 
       <TouchableOpacity
-        style={styles.updateButton}
-        onPress={() => navigation.navigate('UpdateProfile')}>
+        style={styles.updateButton}>
         <Text style={styles.updateText}>Actualizar perfil</Text>
       </TouchableOpacity>
     </ScrollView>

@@ -26,7 +26,7 @@ export default function ProfileScreen({ navigation }) {
         <Text style={styles.value}>Calle Ficticia #123, Ciudad, País</Text>
 
         <Text style={styles.label}>Cartilla:</Text>
-        <Text style={styles.value}>cartilla_juan.pdf</Text> {/* Simulación de nombre de archivo */}
+        <Text style={styles.value}>cartilla_juan.pdf</Text> 
       </View>
 
       <TouchableOpacity
