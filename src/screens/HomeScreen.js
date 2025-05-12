@@ -1,75 +1,60 @@
-import React from 'react';
-import { View, Text, StyleSheet, TextInput, Image, ScrollView, TouchableOpacity } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, TextInput, Image, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from "@react-navigation/native"; 
 import styles from '../Styles/HomeSyles';
+import { analizarSintomas } from '../Services/aiService';
 
 export default function HomeScreen() {
   const navigation = useNavigation();
+  const [mensaje, setMensaje] = useState('');
+  const [mensajes, setMensajes] = useState([]);  // historial de mensajes
+  const [cargando, setCargando] = useState(false);
+
+  const enviarSintomas = async () => {
+    if (mensaje.trim() === '') return;
+
+    // Agregar mensaje del usuario al historial
+    const nuevoMensajeUsuario = { tipo: 'user', texto: mensaje };
+    setMensajes((prev) => [...prev, nuevoMensajeUsuario]);
+
+    setCargando(true);
+
+    try {
+      const resultado = await analizarSintomas(mensaje);
+
+      // Agregar respuesta de la IA al historial
+      const nuevoMensajeBot = { tipo: 'bot', texto: resultado };
+      setMensajes((prev) => [...prev, nuevoMensajeBot]);
+    } catch (error) {
+      const errorMensaje = { tipo: 'bot', texto: 'Ocurrió un error al consultar la IA.' };
+      setMensajes((prev) => [...prev, errorMensaje]);
+    }
+
+    setMensaje('');
+    setCargando(false);
+  };
+
   return (
     <SafeAreaView style={styles.safeArea}>
-
       {/* Chat */}
       <ScrollView contentContainerStyle={styles.chatContainer}>
-        {/* Mensajes de ejemplo */}
-        <View style={styles.botMessage}>
-          <Image source={require('../../assets/ia-icon.png')} style={styles.avatar} />
-          <View style={styles.messageBubbleBot}>
-            <Text style={styles.messageText}>Hi Rodolfo, What do you need?</Text>
-          </View>
-        </View>
-
-        <View style={styles.userMessage}>
-          <View style={styles.messageBubbleUser}>
-            <Text style={styles.messageText}>I feel sick in the head</Text>
-          </View>
-          <Image source={require('../../assets/user-avatar.png')} style={styles.avatar} />
-        </View>
-
-        <View style={styles.botMessage}>
-          <Image source={require('../../assets/ia-icon.png')} style={styles.avatar} />
-          <View style={styles.messageBubbleBot}>
-            <Text style={styles.messageText}>
-              Do you have a headache, dizziness, pressure in your head or is it more of an emotional thing?
-            </Text>
-          </View>
-        </View>
-
-        <View style={styles.userMessage}>
-          <View style={styles.messageBubbleUser}>
-            <Text style={styles.messageText}>Like pressure and dizziness</Text>
-          </View>
-          <Image source={require('../../assets/user-avatar.png')} style={styles.avatar} />
-        </View>
-
-        <View style={styles.botMessage}>
-          <Image source={require('../../assets/ia-icon.png')} style={styles.avatar} />
-          <View style={styles.messageBubbleBot}>
-            <Text style={styles.messageText}>If you have a lot of pressure, I recommend going to the doctor.</Text>
-          </View>
-        </View>
-
-        <View style={styles.userMessage}>
-          <View style={styles.messageBubbleUser}>
-            <Text style={styles.messageText}>But what do you recommend I do?</Text>
-          </View>
-          <Image source={require('../../assets/user-avatar.png')} style={styles.avatar} />
-        </View>
-
-        <View style={styles.botMessage}>
-          <Image source={require('../../assets/ia-icon.png')} style={styles.avatar} />
-          <View style={styles.messageBubbleBot}>
-            <Text style={styles.messageText}>You can:</Text>
-            <View style={styles.buttonRow}>
-            <TouchableOpacity style={styles.doctorButton} onPress={() => navigation.navigate('SelectType')}>
-              <Text style={styles.buttonText}>Doctor</Text>
-            </TouchableOpacity>
-              <TouchableOpacity style={styles.pharmacyButton} onPress={() => navigation.navigate('Pharmacy')}>
-                <Text style={styles.buttonText}>Pharmacy</Text>
-              </TouchableOpacity>
+        {mensajes.map((msg, index) => (
+          <View
+            key={index}
+            style={msg.tipo === 'bot' ? styles.botMessage : styles.userMessage}
+          >
+            {msg.tipo === 'bot' && (
+              <Image source={require('../../assets/ia-icon.png')} style={styles.avatar} />
+            )}
+            <View style={msg.tipo === 'bot' ? styles.messageBubbleBot : styles.messageBubbleUser}>
+              <Text style={styles.messageText}>{msg.texto}</Text>
             </View>
+            {msg.tipo === 'user' && (
+              <Image source={require('../../assets/user-avatar.png')} style={styles.avatar} />
+            )}
           </View>
-        </View>
+        ))}
       </ScrollView>
 
       {/* Input */}
@@ -78,11 +63,18 @@ export default function HomeScreen() {
           style={styles.input}
           placeholder="Message"
           placeholderTextColor="#555"
+          value={mensaje}
+          onChangeText={setMensaje}
+          onSubmitEditing={enviarSintomas}
         />
-        <Image source={require('../../assets/ia-icon.png')} style={styles.sendIcon} />
+        {cargando ? (
+          <ActivityIndicator size="small" color="#00BCD4" style={{ marginLeft: 10 }} />
+        ) : (
+          <TouchableOpacity onPress={enviarSintomas}>
+            <Image source={require('../../assets/ia-icon.png')} style={styles.sendIcon} />
+          </TouchableOpacity>
+        )}
       </View>
     </SafeAreaView>
   );
 }
-
-
