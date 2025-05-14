@@ -1,5 +1,4 @@
-// screens/LoginScreen.js
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -7,15 +6,36 @@ import {
   TouchableOpacity,
   StyleSheet,
   Image,
+  Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import styles from '../Styles/LoginSyles';
+import { validarUsuario} from '../Services/userService';
 
 export default function LoginScreen({ navigation }) {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleLogin = async () => {
+    if (email === '' || password === '') {
+      Alert.alert('Error', 'Por favor completa todos los campos.');
+      return;
+    }
+
+    const user = await validarUsuario(email, password);
+    if (user) {
+      Alert.alert('Bienvenido', `Hola ${user.name}`);
+      navigation.navigate('HomeTabs');
+    } else {
+      Alert.alert('Error', 'Usuario o contraseña incorrectos.');
+    }
+
+  };
+
   return (
     <View style={styles.container}>
       <Image
-        source={require('../../assets/logo.png')} // Usa tu logo o imagen principal
+        source={require('../../assets/logo.png')}
         style={styles.logo}
       />
 
@@ -27,6 +47,8 @@ export default function LoginScreen({ navigation }) {
           style={styles.input}
           placeholder="Email"
           keyboardType="email-address"
+          value={email}
+          onChangeText={setEmail}
         />
       </View>
 
@@ -36,16 +58,19 @@ export default function LoginScreen({ navigation }) {
           style={styles.input}
           placeholder="Password"
           secureTextEntry
+          value={password}
+          onChangeText={setPassword}
         />
       </View>
 
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('MainApp')}>
+      <TouchableOpacity style={styles.button} onPress={handleLogin}>
         <Text style={styles.buttonText}>Login</Text>
       </TouchableOpacity>
 
       <TouchableOpacity onPress={() => navigation.navigate('Register')}>
         <Text style={styles.registerText}>
-          Don’t have an account? <Text style={styles.registerLink}>Register</Text>
+          Don’t have an account?{' '}
+          <Text style={styles.registerLink}>Register</Text>
         </Text>
       </TouchableOpacity>
     </View>

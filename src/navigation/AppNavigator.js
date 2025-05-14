@@ -14,7 +14,7 @@ export default function AppNavigator() {
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="Login" component={LoginScreen} />
       <Stack.Screen name="Register" component={RegisterScreen} />
-      <Stack.Screen name="MainApp" component={HomeTabs} options={{ headerShown: false }} />
+      <Stack.Screen name="HomeTabs" component={HomeTabs} options={{ headerShown: false }}  />
       <Stack.Screen name="Profile" component={ProfileScreen} />
       <Stack.Screen name="SelectType" component={SelectTypeScreen} options={{ headerTitleAlign: 'center', headerTitle: 'Update Perfil' }}/>
     </Stack.Navigator>

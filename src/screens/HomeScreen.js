@@ -12,12 +12,13 @@ export default function HomeScreen() {
   const [cargando, setCargando] = useState(false);
 
   const enviarSintomas = async () => {
+
     if (mensaje.trim() === '') return;
 
     // Agregar mensaje del usuario al historial
     const nuevoMensajeUsuario = { tipo: 'user', texto: mensaje };
     setMensajes((prev) => [...prev, nuevoMensajeUsuario]);
-
+    
     setCargando(true);
 
     try {
