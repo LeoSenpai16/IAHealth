@@ -1,18 +1,13 @@
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, updateDoc } from 'firebase/firestore';
 import { db } from './firebaseConfig';
 
-export const obtenerPerfilUsuario = async (userId) => {
+export const actualizarPerfil = async (userId, nuevosDatos) => {
   try {
-    const userDocRef = doc(db, 'users', userId);
-    const userDoc = await getDoc(userDocRef);
-
-    if (userDoc.exists()) {
-      return { id: userDoc.id, ...userDoc.data() };
-    } else {
-      return null;
-    }
+    const userRef = doc(db, 'users', userId);
+    await updateDoc(userRef, nuevosDatos);
+    return true;
   } catch (error) {
-    console.error("Error obteniendo perfil:", error);
-    return null;
+    console.error("Error actualizando perfil:", error);
+    return false;
   }
-};  
+};

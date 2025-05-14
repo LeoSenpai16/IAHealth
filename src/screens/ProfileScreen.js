@@ -1,11 +1,21 @@
 // screens/ProfileScreen.js
-import React from 'react';
+import { useState, useCallback } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import styles from '../Styles/profileStyles';
 import { getCurrentUser } from '../Services/userService';
 
 export default function ProfileScreen({ navigation }) {
-    const user = getCurrentUser();
+  const [user, setUser] = useState(getCurrentUser());
+
+  useFocusEffect(
+    useCallback(() => {
+      const updatedUser = getCurrentUser();
+      console.log("📱 Recargando perfil:", updatedUser);
+      setUser(updatedUser);
+    }, [])
+  );
+
   return (
     <View style={styles.container}>
       <Image
@@ -34,6 +44,7 @@ export default function ProfileScreen({ navigation }) {
         style={styles.button}
         onPress={() => navigation.navigate('UpdateProfileScreen')}
       >
+        
         <Text style={styles.buttonText}>Actualizar Perfil</Text>
       </TouchableOpacity>
     </View>

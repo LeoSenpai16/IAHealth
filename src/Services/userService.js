@@ -18,5 +18,13 @@ export const validarUsuario = async (email, password) => {
   }
 };
 
+export const updateCurrentUser = (nuevosDatos) => {
+  if (!currentUser) {
+    return;
+  }
+  currentUser = { ...currentUser, ...nuevosDatos };
+};
+
+
 // Nueva función para obtener el usuario actual
 export const getCurrentUser = () => currentUser;
