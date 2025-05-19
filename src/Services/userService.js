@@ -1,8 +1,20 @@
-import { collection, query, where, getDocs } from 'firebase/firestore';
+import { collection, query, where, getDocs, setDoc, doc  } from 'firebase/firestore';
 import { db } from './firebaseConfig';
 
 // Variable para almacenar el usuario autenticado
 let currentUser = null;
+
+export const registrarUsuario = async (usuario) => {
+  try {
+    const userRef = doc(collection(db, 'users'), usuario.email); // usa email como ID
+    await setDoc(userRef, usuario);
+    console.log("Usuario registrado con ID: ", userRef.id);
+    return userRef.id;
+  } catch (error) {
+    console.error("Error registrando usuario: ", error);
+    throw error;
+  }
+};
 
 export const validarUsuario = async (email, password) => {
   const usuariosRef = collection(db, 'users');
