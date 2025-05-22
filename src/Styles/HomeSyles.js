@@ -1,4 +1,3 @@
-// src/styles/HomeScreen.styles.js
 import { StyleSheet } from 'react-native';
 
 export default StyleSheet.create({
@@ -90,25 +89,44 @@ export default StyleSheet.create({
     width: 24,
     height: 24,
   },
+
+  // Estilos mejorados para botones con wrap y espaciado
   buttonRow: {
     flexDirection: 'row',
+    flexWrap: 'wrap',      // para que los botones hagan wrap si no caben en una fila
     marginTop: 10,
-    gap: 10,
+    justifyContent: 'center', // para centrar los botones
+    paddingHorizontal: 10,
   },
   doctorButton: {
     backgroundColor: 'red',
-    paddingVertical: 6,
-    paddingHorizontal: 16,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
     borderRadius: 20,
+    margin: 5,             // espacio entre botones
+    minWidth: 130,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    elevation: 3,
   },
   pharmacyButton: {
     backgroundColor: 'green',
-    paddingVertical: 6,
-    paddingHorizontal: 16,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
     borderRadius: 20,
+    margin: 5,
+    minWidth: 130,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    elevation: 3,
   },
   buttonText: {
     color: '#fff',
     fontWeight: 'bold',
+    fontSize: 14,
   },
 });

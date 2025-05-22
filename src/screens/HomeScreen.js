@@ -8,7 +8,8 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   KeyboardAvoidingView,
-  Platform
+  Platform,
+  Linking 
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from "@react-navigation/native";
@@ -21,7 +22,7 @@ export default function HomeScreen() {
   const [mensaje, setMensaje] = useState('');
   const [mensajes, setMensajes] = useState([]);
   const [cargando, setCargando] = useState(false);
-  const scrollViewRef = useRef();  // 🟢 ref para el ScrollView
+  const scrollViewRef = useRef();
 
   useEffect(() => {
     const usuario = getCurrentUser();
@@ -29,18 +30,32 @@ export default function HomeScreen() {
 
     const mensajeBienvenida = {
       tipo: 'bot',
-      texto: `${nombreUsuario}, hola. ¿En qué puedo ayudarte hoy? ¿Tienes algún síntoma o consulta médica que deseas evaluar?`
+      texto: `${nombreUsuario}, hola. ¿En qué puedo ayudarte hoy? ¿Tienes algún síntoma o consulta médica que deseas evaluar?`,
+      botones: null,
     };
 
     setMensajes([mensajeBienvenida]);
   }, []);
 
-  // Scroll automático al final cuando se actualicen los mensajes
   useEffect(() => {
     if (scrollViewRef.current) {
       scrollViewRef.current.scrollToEnd({ animated: true });
     }
   }, [mensajes]);
+
+  const manejarBoton = (tipo) => {
+    switch (tipo) {
+      case 'cita':
+        navigation.navigate('SelectType'); // O la pantalla que uses para citas
+        break;
+      case 'medicina':
+        navigation.navigate('Pharmacy');  // O la pantalla para comprar medicinas
+        break;
+      case 'urgencias':
+        Linking.openURL('tel:911');
+        break;
+    }
+  };
 
   const enviarSintomas = async () => {
     if (mensaje.trim() === '') return;
@@ -52,10 +67,25 @@ export default function HomeScreen() {
 
     try {
       const resultado = await analizarSintomas(mensaje);
-      const nuevoMensajeBot = { tipo: 'bot', texto: resultado };
+
+      // Aquí detectamos si el resultado tiene la palabra clave para mostrar botones (o siempre los mostramos)
+      const nuevoMensajeBot = {
+        tipo: 'bot',
+        texto: resultado,
+        botones: [
+          { id: 'cita', texto: 'Hacer cita con doctor' },
+          { id: 'medicina', texto: 'Comprar medicina' },
+          { id: 'urgencias', texto: 'Urgencias' },
+        ],
+      };
+
       setMensajes((prev) => [...prev, nuevoMensajeBot]);
     } catch (error) {
-      const errorMensaje = { tipo: 'bot', texto: 'Ocurrió un error al consultar la IA.' };
+      const errorMensaje = {
+        tipo: 'bot',
+        texto: 'Ocurrió un error al consultar la IA.',
+        botones: null,
+      };
       setMensajes((prev) => [...prev, errorMensaje]);
     }
 
@@ -69,10 +99,7 @@ export default function HomeScreen() {
         style={{ flex: 1 }}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
-        <ScrollView
-          contentContainerStyle={styles.chatContainer}
-          ref={scrollViewRef}
-        >
+        <ScrollView contentContainerStyle={styles.chatContainer} ref={scrollViewRef}>
           {mensajes.map((msg, index) => (
             <View
               key={index}
@@ -83,6 +110,27 @@ export default function HomeScreen() {
               )}
               <View style={msg.tipo === 'bot' ? styles.messageBubbleBot : styles.messageBubbleUser}>
                 <Text style={styles.messageText}>{msg.texto}</Text>
+
+                {/* Si el mensaje es del bot y tiene botones, los mostramos */}
+                {msg.tipo === 'bot' && msg.botones && (
+                  <View style={styles.buttonRow}>
+                    {msg.botones.map((boton) => (
+                      <TouchableOpacity
+                        key={boton.id}
+                        style={
+                          boton.id === 'cita'
+                            ? styles.doctorButton
+                            : boton.id === 'medicina'
+                            ? styles.pharmacyButton
+                            : [styles.pharmacyButton, { backgroundColor: 'orange' }]
+                        }
+                        onPress={() => manejarBoton(boton.id)}
+                      >
+                        <Text style={styles.buttonText}>{boton.texto}</Text>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+                )}
               </View>
               {msg.tipo === 'user' && (
                 <Image source={require('../../assets/user-avatar.png')} style={styles.avatar} />
@@ -99,6 +147,7 @@ export default function HomeScreen() {
             value={mensaje}
             onChangeText={setMensaje}
             onSubmitEditing={enviarSintomas}
+            multiline
           />
           {cargando ? (
             <ActivityIndicator size="small" color="#00BCD4" style={{ marginLeft: 10 }} />

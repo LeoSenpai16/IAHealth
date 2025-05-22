@@ -21,16 +21,17 @@ export const analizarSintomas = async (mensajeUsuario) => {
         },
         {
           role: 'user',
-          content: `Mi nombre es ${nombreUsuario}. ${mensajeUsuario}`
+          content: `Mi nombre es ${nombreUsuario}. ${mensajeUsuario}
+
+        Proporciona recomendaciones claras, y si consideras necesario, sugiere acciones como hacer cita, comprar medicina o urgencias.`
         }
       ]
     });
-
 
     return completion.choices[0].message.content;
   } catch (error) {
     console.error('Error al consultar la IA:', error);
     throw error;
   }
-  
 };
+
