@@ -2,20 +2,15 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
+import { useRoute } from '@react-navigation/native';
 import { confirmVisitStyles as styles } from '../Styles/doctorStyles';
 
-const doctor = {
-  id: 1,
-  name: 'Alfredo Lopez Sandoval',
-  type: 'General Doctor',
-  phone: '4491633605',
-  email: 'alf.ls@gmail.com',
-  latitude: 21.88234,
-  longitude: -102.29156,
-  avatar: 'https://i.pravatar.cc/101',
-};
-
 export default function ConfirmVisitScreen() {
+  const route = useRoute();
+  const { doctor } = route.params;
+
+  console.log('Doctor recibido:', doctor);
+
   const [location, setLocation] = useState(null);
 
   useEffect(() => {
@@ -45,19 +40,21 @@ export default function ConfirmVisitScreen() {
             pinColor="blue"
           />
           <Marker
-            coordinate={{ latitude: doctor.latitude, longitude: doctor.longitude }}
+            coordinate={{
+              latitude: doctor.location.latitude,
+              longitude: doctor.location.longitude,
+            }}
             title={doctor.name}
-            description={doctor.type}
+            description={`Tel: ${doctor.phone}`}
             pinColor="red"
           />
         </MapView>
       )}
 
-      {/* Tarjeta visible siempre */}
       <View style={styles.card}>
-        <Image source={{ uri: doctor.avatar }} style={styles.avatar} />
+        <Image source={{ uri: doctor.imageUrl }} style={styles.avatar} />
         <View style={{ flex: 1 }}>
-          <Text style={styles.type}>{doctor.type}</Text>
+          <Text style={styles.type}>Doctor</Text>
           <Text style={styles.name}>{doctor.name}</Text>
           <Text style={styles.info}>Phone: {doctor.phone}</Text>
           <Text style={styles.info}>Email: {doctor.email}</Text>
@@ -67,13 +64,16 @@ export default function ConfirmVisitScreen() {
       <View style={styles.priceContainer}>
         <View>
           <Text style={styles.label}>Visit Price</Text>
-          <Text style={styles.value}>$400</Text>
+          <Text style={styles.value}>{doctor.price}</Text>
           <Text style={[styles.label, { marginTop: 10 }]}>Transfer Fee</Text>
           <Text style={styles.value}>$82</Text>
         </View>
         <View style={{ alignItems: 'flex-end' }}>
           <Text style={styles.label}>Total</Text>
-          <Text style={styles.total}>$482</Text>
+          <Text style={styles.total}>
+            $
+            {parseInt(doctor.price.replace('$', '')) + 82}
+          </Text>
           <TouchableOpacity style={styles.confirmButton}>
             <Text style={styles.confirmText}>Confirm Visit</Text>
           </TouchableOpacity>
@@ -82,4 +82,3 @@ export default function ConfirmVisitScreen() {
     </View>
   );
 }
-
