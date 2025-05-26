@@ -4,12 +4,12 @@ import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { useRoute } from '@react-navigation/native';
 import { confirmVisitStyles as styles } from '../Styles/doctorStyles';
+import { createAppointment } from '../Services/appointmentService';
+import { getCurrentUser } from '../Services/userService';
 
 export default function ConfirmVisitScreen() {
   const route = useRoute();
   const { doctor } = route.params;
-
-  console.log('Doctor recibido:', doctor);
 
   const [location, setLocation] = useState(null);
 
@@ -21,6 +21,31 @@ export default function ConfirmVisitScreen() {
       setLocation(loc.coords);
     })();
   }, []);
+
+  const handleConfirmVisit = async () => {
+    try {
+      const currentUser = getCurrentUser();
+      if (!currentUser) {
+        alert('Usuario no autenticado');
+        return;
+      }
+
+      await createAppointment({
+        userId: currentUser.id,
+        doctorName: doctor.name,
+        phone: doctor.phone,
+        email: doctor.email,
+        imageUrl: doctor.imageUrl,
+        price: doctor.price,
+        date: new Date().toISOString(),
+        location: doctor.location,
+      });
+      alert('Cita confirmada ✅');
+    } catch (error) {
+      console.error('Error al confirmar la cita:', error);
+      alert('Error al confirmar la cita');
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -74,7 +99,10 @@ export default function ConfirmVisitScreen() {
             $
             {parseInt(doctor.price.replace('$', '')) + 82}
           </Text>
-          <TouchableOpacity style={styles.confirmButton}>
+          <TouchableOpacity
+            style={styles.confirmButton}
+            onPress={handleConfirmVisit}
+          >
             <Text style={styles.confirmText}>Confirm Visit</Text>
           </TouchableOpacity>
         </View>
