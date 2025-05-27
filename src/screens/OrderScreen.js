@@ -1,43 +1,50 @@
-import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  Image,
-  TouchableOpacity,
-} from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, Image, ScrollView, TouchableOpacity } from 'react-native';
 import styles from '../Styles/OrderSyles';
+import { getOrders, deleteOrder } from '../Services/orderService';
+import { getCurrentUser } from '../Services/userService';
+import { Ionicons } from '@expo/vector-icons';
+import { useFocusEffect } from '@react-navigation/native';
+import { useCallback } from 'react';
 
-const orders = [
-  {
-    id: 1,
-    name: 'Paracetamol',
-    quantity: 2,
-    unitPrice: 50,
-    image: require('../../assets/paracetamol.png'),
-  },
-  {
-    id: 2,
-    name: 'Ibuprofeno',
-    quantity: 1,
-    unitPrice: 65,
-    image: require('../../assets/ibuprofeno.png'),
-  },
-  {
-    id: 3,
-    name: 'Loratadina',
-    quantity: 3,
-    unitPrice: 80,
-    image: require('../../assets/loratadina.png'),
-  },
-];
 
 export default function OrderScreen() {
+  const [orders, setOrders] = useState([]);
+  useFocusEffect(
+    useCallback(() => {
+      const fetchOrders = async () => {
+        const currentUser = getCurrentUser();
+        if (!currentUser) return;
+
+        const pedidos = await getOrders(currentUser.id);
+        setOrders(pedidos);
+      };
+
+      fetchOrders();
+    }, [])
+  );
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      const currentUser = getCurrentUser();
+      if (!currentUser) return;
+
+      const pedidos = await getOrders(currentUser.id);
+      setOrders(pedidos);
+    };
+
+    fetchOrders();
+  }, []);
+
   const total = orders.reduce(
     (sum, item) => sum + item.quantity * item.unitPrice,
     0
   );
+
+  const handleDelete = async (id) => {
+    await deleteOrder(id);
+    setOrders(orders.filter(o => o.id !== id));
+  };
 
   return (
     <View style={styles.container}>
@@ -46,27 +53,26 @@ export default function OrderScreen() {
           <View key={order.id} style={styles.card}>
             <View style={{ flex: 1 }}>
               <Text style={styles.name}>{order.name}</Text>
-              <Text style={styles.details}>Quantity: {order.quantity}</Text>
-              <Text style={styles.totalUnit}>
-                ${order.quantity * order.unitPrice}
-              </Text>
+              <Text style={styles.details}>Cantidad: {order.quantity}</Text>
+              <Text style={styles.details}>Subtotal: ${order.quantity * order.unitPrice}</Text>
             </View>
-            <Image source={order.image} style={styles.image} />
+            <Image source={{ uri: order.imageUrl }} style={styles.image} />
+            <TouchableOpacity onPress={() => handleDelete(order.id)}>
+              <Ionicons name="trash-outline" size={24} color="red" />
+            </TouchableOpacity>
           </View>
         ))}
       </ScrollView>
 
-      {/* Contenedor fijo abajo */}
       <View style={styles.bottomBar}>
         <View style={styles.totalContainer}>
           <Text style={styles.totalLabel}>Total</Text>
           <Text style={styles.totalAmount}>${total}</Text>
         </View>
         <TouchableOpacity style={styles.confirmButton}>
-          <Text style={styles.confirmText}>Confirm Order</Text>
+          <Text style={styles.confirmText}>Confirmar Pedido</Text>
         </TouchableOpacity>
       </View>
     </View>
   );
 }
-

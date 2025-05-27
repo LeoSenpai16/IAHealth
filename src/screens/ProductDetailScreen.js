@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, Image, TouchableOpacity } from 'react-native';
 import styles from '../Styles/ProductDetailStyles';
-
+import { addOrder } from '../Services/orderService';
+import { getCurrentUser } from '../Services/userService';
 
 const ProductDetailScreen = ({ route }) => {
   const { product } = route.params;
@@ -14,7 +15,7 @@ const ProductDetailScreen = ({ route }) => {
 
   return (
     <View style={styles.container}>
-      <Image source={product.image} style={styles.image} />
+      <Image source={{ uri: product.imageUrl }} style={styles.image} />
       <Text style={styles.name}>{product.name}</Text>
       <Text style={styles.description}>{product.description}</Text>
       <Text style={styles.price}>{product.price}</Text>
@@ -29,9 +30,25 @@ const ProductDetailScreen = ({ route }) => {
         </TouchableOpacity>
       </View>
 
-      <TouchableOpacity style={styles.addButton}>
-        <Text style={styles.addButtonText}>Agregar {quantity} al carrito</Text>
-      </TouchableOpacity>
+    <TouchableOpacity
+      style={styles.addButton}
+      onPress={async () => {
+        const currentUser = getCurrentUser();
+        if (!currentUser) return;
+
+        await addOrder({
+          name: product.name,
+          quantity,
+          unitPrice: parseFloat(product.price.replace('$', '')),
+          imageUrl: product.imageUrl,
+          userId: currentUser.id,
+        });
+
+        alert(`${quantity} ${product.name} agregado al carrito`);
+      }}
+    >
+      <Text style={styles.addButtonText}>Agregar {quantity} al carrito</Text>
+    </TouchableOpacity>
     </View>
   );
 };

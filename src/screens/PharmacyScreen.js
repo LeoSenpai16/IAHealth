@@ -1,42 +1,27 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   ScrollView,
   Image,
   TouchableOpacity,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import styles from '../Styles/PharmacySyles';
-
-
-const medicines = [
-  {
-    id: 1,
-    name: 'Paracetamol',
-    description: 'Pain reliever and fever reducer',
-    price: '$50',
-    image: require('../../assets/paracetamol.png'),
-  },
-  {
-    id: 2,
-    name: 'Ibuprofeno',
-    description: 'Anti-inflammatory for pain relief',
-    price: '$65',
-    image: require('../../assets/ibuprofeno.png'),
-  },
-  {
-    id: 3,
-    name: 'Loratadina',
-    description: 'Allergy relief',
-    price: '$80',
-    image: require('../../assets/loratadina.png'),
-  },
-];
+import { getMedicines } from '../Services/pharmacyService';
 
 const PharmacyScreen = () => {
   const navigation = useNavigation();
+  const [medicines, setMedicines] = useState([]);
+
+  useEffect(() => {
+    const fetchMedicines = async () => {
+      const meds = await getMedicines();
+      setMedicines(meds);
+    };
+
+    fetchMedicines();
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -52,14 +37,13 @@ const PharmacyScreen = () => {
               <Text style={styles.details}>{med.description}</Text>
               <Text style={styles.price}>{med.price}</Text>
             </View>
-            <Image source={med.image} style={styles.image} />
+            <Image
+              source={{ uri: med.imageUrl }}
+              style={styles.image}
+            />
           </TouchableOpacity>
         ))}
       </ScrollView>
-
-      <TouchableOpacity style={styles.sosButton}>
-        <Text style={styles.sosText}>SOS</Text>
-      </TouchableOpacity>
     </View>
   );
 };
