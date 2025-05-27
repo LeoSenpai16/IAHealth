@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState, useRef } from 'react';
+import { View, Text, StyleSheet, Image, TouchableOpacity, ActivityIndicator } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { useRoute } from '@react-navigation/native';
@@ -12,15 +12,38 @@ export default function ConfirmVisitScreen() {
   const { doctor } = route.params;
 
   const [location, setLocation] = useState(null);
+  const [locationStatus, setLocationStatus] = useState('loading'); // loading | granted | denied
+  const mapRef = useRef(null);
 
   useEffect(() => {
     (async () => {
       const { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') return;
+      if (status !== 'granted') {
+        setLocationStatus('denied');
+        return;
+      }
+      setLocationStatus('granted');
+
       const loc = await Location.getCurrentPositionAsync({});
       setLocation(loc.coords);
     })();
   }, []);
+
+  useEffect(() => {
+    if (location && doctor.location && mapRef.current) {
+      mapRef.current.fitToCoordinates(
+        
+        [
+          { latitude: location.latitude, longitude: location.longitude },
+          { latitude: doctor.location.latitude, longitude: doctor.location.longitude },
+        ],
+        {
+          edgePadding: { top: 100, right: 100, bottom: 100, left: 100 },
+          animated: true,
+        }
+      );
+    }
+  }, [location, doctor.location]);
 
   const handleConfirmVisit = async () => {
     try {
@@ -47,10 +70,28 @@ export default function ConfirmVisitScreen() {
     }
   };
 
+  if (locationStatus === 'loading') {
+    return (
+      <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+        <ActivityIndicator size="large" color="#0000ff" />
+        <Text>Cargando ubicación...</Text>
+      </View>
+    );
+  }
+
+  if (locationStatus === 'denied') {
+    return (
+      <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+        <Text>No se concedieron permisos para acceder a la ubicación.</Text>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
       {location && (
         <MapView
+          ref={mapRef}
           style={styles.map}
           initialRegion={{
             latitude: location.latitude,
@@ -64,6 +105,7 @@ export default function ConfirmVisitScreen() {
             title="Tú estás aquí"
             pinColor="blue"
           />
+
           <Marker
             coordinate={{
               latitude: doctor.location.latitude,
